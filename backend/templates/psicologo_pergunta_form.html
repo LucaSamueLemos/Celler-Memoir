@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+
+{% block title %}
+{% if pergunta %}Editar Pergunta{% else %}Nova Pergunta{% endif %}
+{% endblock %}
+
+{% block content %}
+<style>
+    ul.list-group {
+        list-style: none;
+        padding-left: 0;
+        margin-left: 0;
+    }
+</style>
+<h1 class="mb-4">{% if pergunta %}Editar Pergunta{% else %}Nova Pergunta{% endif %}</h1>
+
+<style>
+    .centered-flex-container {
+        display: flex;
+        justify-content: center;
+        gap: 4px;
+        flex-wrap: nowrap;
+        align-items: flex-start;
+        max-width: 600px;
+        margin: 0 auto 1rem auto;
+    }
+    .centered-flex-container > div {
+        margin: 15px
+    }
+    .texto-pergunta {
+        flex: 2 1 800px;
+    }
+    .paciente-select {
+        flex: 1 1 800px;
+    }
+    .centered-flex-container label.form-label {
+        margin-bottom: 0.25rem;
+        padding-right: 4px;
+        white-space: nowrap;
+    }
+    .centered-flex-container textarea.form-control,
+    .centered-flex-container select.form-control {
+        margin: 0;
+        padding: 4px 6px;
+        box-sizing: border-box;
+    }
+    .centered-flex-container textarea.form-control {
+        height: auto;
+    }
+    .centered-flex-container select.form-control {
+        height: 38px;
+    }
+    .centered-flex-container small.form-text {
+        margin-left: 4px;
+    }
+</style>
+
+<form method="POST" id="pergunta-form">
+    <div class="centered-flex-container">
+        <div class="texto-pergunta">
+            <label for="pergunta_texto" class="form-label">Texto da Pergunta</label>
+            <textarea  class="form-control" id="pergunta_texto" name="pergunta_texto" rows="4" style="resize: none;" required>{% if pergunta %}{{ pergunta.pergunta_texto }}{% endif %}</textarea>
+        </div>
+        <div class="paciente-select">
+            <label for="pacientes" class="form-label">Paciente</label>
+            <select id="pacientes" name="pacientes" class="form-control" required>
+                <option value="">Selecione um paciente</option>
+                {% for paciente in pacientes %}
+                    <option value="{{ paciente.id }}"
+                        {% if pergunta and paciente in pergunta.pacientes %}
+                            selected
+                        {% endif %}
+                    >{{ paciente.nome }}</option>
+                {% endfor %}
+            </select>
+            <small class="form-text text-muted">Selecione o paciente para o qual esta pergunta será direcionada.</small>
+        </div>
+    </div>
+
+    <div class="mb-3" id="assigned-questions-container" style="display:none;">
+        <label class="form-label">Perguntas atribuídas ao paciente selecionado:</label>
+        <ul id="assigned-questions-list" class="list-group">
+            <!-- Assigned questions will be populated here -->
+        </ul>
+    </div>
+
+    <div style="display: flex; gap: 8px;">
+        <button type="submit" class="btn btn-primary" style="height: 38px; padding: 6px 12px;">{% if pergunta %}Atualizar{% else %}Criar{% endif %}</button>
+<a href="{{ url_for('routes.psicologo_perguntas') }}" class="btn btn-secondary" style="height: 38px; padding: 6px 12px; text-decoration: none;">Cancelar</a>
+    </div>
+</form>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const pacientesSelect = document.getElementById('pacientes');
+    const assignedQuestionsContainer = document.getElementById('assigned-questions-container');
+    const assignedQuestionsList = document.getElementById('assigned-questions-list');
+
+    function fetchAssignedQuestions(pacienteId) {
+        fetch(`/psicologo/api/paciente/${pacienteId}/perguntas`)
+            .then(response => response.json())
+            .then(data => {
+                assignedQuestionsList.innerHTML = '';
+                if (data.perguntas && data.perguntas.length > 0) {
+                    data.perguntas.forEach(pergunta => {
+                        const li = document.createElement('li');
+                        li.className = 'list-group-item';
+                        li.textContent = pergunta.pergunta_texto;
+                        assignedQuestionsList.appendChild(li);
+                    });
+                    assignedQuestionsContainer.style.display = 'block';
+                } else {
+                    assignedQuestionsList.innerHTML = '<li class="list-group-item">Nenhuma pergunta atribuída.</li>';
+                    assignedQuestionsContainer.style.display = 'block';
+                }
+            })
+            .catch(error => {
+                assignedQuestionsList.innerHTML = '<li class="list-group-item text-danger">Erro ao carregar perguntas atribuídas.</li>';
+                assignedQuestionsContainer.style.display = 'block';
+            });
+    }
+
+    function handleSelectionChange() {
+        const pacienteId = pacientesSelect.value;
+        if (pacienteId) {
+            fetchAssignedQuestions(pacienteId);
+        } else {
+            assignedQuestionsContainer.style.display = 'none';
+            assignedQuestionsList.innerHTML = '';
+        }
+    }
+
+    pacientesSelect.addEventListener('change', handleSelectionChange);
+
+    // Initial load if editing and one patient selected
+    handleSelectionChange();
+});
+</script>
+{% endblock %}

@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}Perguntas do Psicólogo - Memoir App{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">Perguntas do Psicólogo</h1>
+
+
+{% if perguntas %}
+    <form method="POST" action="{{ url_for('routes.paciente_perguntas_responder') }}">
+        <div class="list-group">
+            {% for pergunta in perguntas %}
+                <div class="list-group-item mb-3">
+                    <label for="resposta_{{ pergunta.id }}" class="form-label">{{ pergunta.pergunta_texto }}</label>
+                    <textarea class="form-control" id="resposta_{{ pergunta.id }}" name="resposta_{{ pergunta.id }}" rows="3">{% if respostas[pergunta.id] %}{{ respostas[pergunta.id].resposta_texto }}{% endif %}</textarea>
+                </div>
+            {% endfor %}
+        </div>
+        <button type="submit" class="btn btn-primary">Salvar Respostas</button>
+    </form>
+{% else %}
+    <div class="alert alert-info" role="alert">
+        Nenhuma pergunta disponível no momento.
+    </div>
+{% endif %}
+
+{% endblock %}

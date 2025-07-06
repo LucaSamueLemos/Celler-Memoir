@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+
+{% block title %}Meus Registros - Paciente{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12 mb-4">
+        <h1 class="text-center">Seus Registros</h1>
+        <p class="text-center text-muted">Visualize seus registros de emoções e as respostas de questionários e perguntas.</p>
+    </div>
+
+    <div class="col-lg-12 mb-4">
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <h3 class="card-title mb-3">Emoções Registradas</h3>
+                {% if registros_emocoes %}
+                <div class="list-group" style="padding-left: 0;">
+                    {% for registro in registros_emocoes %}
+                    <div class="list-group-item">
+                        {{ registro.data_registro.strftime('%d/%m/%Y %H:%M') }} - {{ registro.emocao }}
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p>Você ainda não registrou emoções.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <h3 class="card-title mb-3">Respostas de Questionários</h3>
+                {% if respostas_questionarios %}
+                <div class="list-group" style="padding-left: 0;">
+                    {% for resposta in respostas_questionarios %}
+                    <div class="list-group-item">
+                        <strong>Data da Resposta:</strong> {{ resposta.data_resposta.strftime('%d/%m/%Y') if resposta.data_resposta else 'N/A' }}<br>
+                        <strong>Humor Geral:</strong> {{ resposta.humor_geral if resposta.humor_geral is not none else 'N/A' }}<br>
+                        <strong>Sentimento Principal:</strong> {{ resposta.sentimento_principal if resposta.sentimento_principal else 'N/A' }}<br>
+                        <strong>Dormiu Bem:</strong> {{ 'Sim' if resposta.dormiu_bem else 'Não' if resposta.dormiu_bem is not none else 'N/A' }}<br>
+                        <strong>Motivação para Tarefas:</strong> {{ 'Sim' if resposta.motivacao_tarefas else 'Não' if resposta.motivacao_tarefas is not none else 'N/A' }}<br>
+                        <strong>Causa do Estresse:</strong> {{ resposta.causa_estresse if resposta.causa_estresse else 'N/A' }}<br>
+                        <strong>Nível de Ansiedade:</strong> {{ resposta.nivel_ansiedade if resposta.nivel_ansiedade is not none else 'N/A' }}<br>
+                        <strong>Qualidade do Sono:</strong> {{ resposta.qualidade_sono if resposta.qualidade_sono else 'N/A' }}<br>
+                        <strong>Alimentou Bem:</strong> {{ resposta.alimentou_bem if resposta.alimentou_bem else 'N/A' }}<br>
+                        <strong>Feliz e Motivado:</strong> {{ resposta.feliz_motivado if resposta.feliz_motivado else 'N/A' }}
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p>Você ainda não respondeu a questionários.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        {# Removed Consultas Agendadas section as per user request #}
+        {# <div class="card shadow-sm">
+            <div class="card-body">
+                <h3 class="card-title mb-3">Consultas Agendadas</h3>
+                {% if consultas %}
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Data e Hora</th>
+                            <th>Duração</th>
+                            <th>Status</th>
+                            <th>Notas</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for consulta in consultas %}
+                        <tr>
+                            <td>{{ consulta.data_hora.strftime('%d/%m/%Y %H:%M') }}</td>
+                            <td>{{ consulta.duracao_minutos }} min</td>
+                            <td>{{ consulta.status }}</td>
+                            <td>{{ consulta.notas if consulta.notas else 'N/A' }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <p>Você ainda não tem consultas agendadas.</p>
+                {% endif %}
+            </div>
+        </div> #}
+    </div>
+
+    <div class="col-lg-12 mb-4">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h3 class="card-title mb-3">Respostas às Perguntas do Psicólogo</h3>
+                {% if respostas_perguntas %}
+                <div class="list-group" style="padding-left: 0;">
+                    {% for resposta in respostas_perguntas %}
+                    <div class="list-group-item">
+                        <strong>Pergunta:</strong> {{ resposta.pergunta.pergunta_texto }}<br>
+                        <strong>Resposta:</strong> {{ resposta.resposta_texto }}<br>
+                        <small class="text-muted">Respondido em: {{ resposta.data_resposta.strftime('%d/%m/%Y %H:%M') if resposta.data_resposta else 'N/A' }}</small>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p>Você ainda não respondeu às perguntas do psicólogo.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}Cadastro Psicólogo - Memoir App{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-center align-items-center min-vh-100">
+    <div class="card login-card p-4 p-md-5 mx-auto" style="max-width: 500px; width: 100%; box-sizing: border-box;">
+        <div class="card-body text-center">
+            <h2 class="card-title mb-4">Cadastro de Psicólogo</h2>
+<form method="POST" action="{{ url_for('routes.register_psicologo') }}">
+    <div class="mb-3 text-start">
+        <label for="nome" class="form-label">Nome</label>
+        <input type="text" class="form-control" id="nome" name="nome" placeholder="Seu nome completo" required>
+    </div>
+    <div class="mb-3 text-start">
+        <label for="email" class="form-label">Email</label>
+        <input type="email" class="form-control" id="email" name="email" placeholder="Seu email" required>
+    </div>
+    <div class="mb-3 text-start">
+        <label for="password" class="form-label">Senha</label>
+        <input type="password" class="form-control" id="password" name="password" placeholder="Sua senha" required>
+    </div>
+    <div class="mb-4 text-start">
+        <label for="confirm_password" class="form-label">Confirme a Senha</label>
+        <input type="password" class="form-control" id="confirm_password" name="confirm_password" placeholder="Confirme sua senha" required>
+    </div>
+    <button type="submit" class="btn btn-primary w-100 mb-3">Cadastrar</button>
+</form>
+            <p class="text-center">Já tem uma conta? <a href="{{ url_for('routes.login') }}">Faça login aqui</a></p>
+        </div>
+    </div>
+</div>
+{% endblock %}

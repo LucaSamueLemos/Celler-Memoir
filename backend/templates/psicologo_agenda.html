@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+
+{% block title %}Minha Agenda - Psicólogo{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12 mb-4">
+        <h1 class="text-center">Sua Agenda de Consultas</h1>
+        <p class="text-center text-muted">Gerencie seus próximos atendimentos.</p>
+    </div>
+
+     <div class="col-lg-8 mb-4 d-flex justify-content-center">
+        <div class="card shadow-sm w-100">
+            <div class="card-body d-flex flex-column align-items-center agendar-card-body">
+                <h3 class="card-title mb-3 text-center w-100">Próximas Consultas</h3>
+                {% if consultas %}
+                <div class="table-responsive w-100">
+                    <table class="table table-hover align-middle text-center m-0" style="min-width: 700px;">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="py-3 px-4 text-center">Paciente</th>
+                                <th class="py-3 px-4 text-center">Data e Hora</th>
+                                <th class="py-3 px-4 text-center">Duração</th>
+                                <th class="py-3 px-4 text-center">Status</th>
+                                <th class="py-3 px-4 text-center">Notas</th>
+                                <th class="py-3 px-4 text-center"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for consulta in consultas %}
+                            <tr {% if consulta.data_hora < now %}class="table-secondary"{% endif %}>
+                                <td class="py-3 px-4 text-center align-middle">{{ consulta.paciente_da_consulta.nome }}</td>
+                                <td class="py-3 px-4 text-center align-middle">{{ consulta.data_hora.strftime('%d/%m/%Y %H:%M') }}</td>
+                                <td class="py-3 px-4 text-center align-middle">{{ consulta.duracao_minutos }} min</td>
+                                <td class="py-3 px-4 text-center align-middle">
+                                    <span class="badge bg-{% if consulta.status == 'Agendada' %}info{% elif consulta.status == 'Realizada' %}success{% else %}secondary{% endif %}">
+                                        {{ consulta.status }}
+                                    </span>
+                                </td>
+                                <td class="py-3 px-4 text-center align-middle">{{ consulta.notas if consulta.notas else 'N/A' }}</td>
+                                <td class="py-3 px-4 consulta-actions-cell text-center align-middle">
+                                    <div class="d-flex gap-2 align-items-center justify-content-center consulta-action-buttons flex-wrap flex-md-nowrap w-100">
+                                        <a href="{{ url_for('routes.edit_consulta', consulta_id=consulta.id) }}" class="btn btn-primary btn-sm consulta-btn mb-1 w-100 w-md-auto">Editar</a>
+                                        <form action="{{ url_for('routes.delete_consulta', consulta_id=consulta.id) }}" method="POST" class="d-inline mb-1 w-100 w-md-auto">
+                                            <button type="submit" class="btn btn-danger btn-sm consulta-btn w-100 w-md-auto" onclick="return confirm('Tem certeza que deseja excluir esta consulta?');">Excluir</button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="alert alert-info text-center w-100" role="alert">
+                    Você ainda não tem consultas agendadas.
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+       <div class="col-lg-4 mb-4 mx-auto d-flex justify-content-center">
+        <div class="card shadow-sm w-100">
+            <div class="card-body d-flex flex-column align-items-center agendar-card-body">
+                <h3 class="card-title mb-3 text-center w-100">Agendar Nova Consulta</h3>
+                    <form method="POST" action="{{ url_for('routes.psicologo_agenda') }}" class="w-100">
+                        <style>
+                            .agendar-form-flex {
+                                display: flex;
+                                flex-wrap: wrap;
+                                gap: 8px;
+                                justify-content: center;
+                            }
+                            .agendar-form-flex > div {
+                                flex: 1 1 45%;
+                                min-width: 150px;
+                                margin-bottom: 1rem;
+                            }
+                            .agendar-form-flex label.form-label {
+                                display: block;
+                                margin-bottom: 0.25rem;
+                            }
+                            .agendar-form-flex .form-control {
+                                width: 100% !important;
+                                margin: 0 auto !important;
+                            }
+                            .agendar-form-flex .text-center {
+                                text-align: left !important;
+                            }
+                            .agendar-submit-btn {
+                                width: 50% !important;
+                                margin: 0 auto;
+                                display: block;
+                            }
+                        </style>
+                        <div class="agendar-form-flex">
+                            <div>
+                                <label for="paciente_id" class="form-label">Paciente</label>
+                                <select class="form-control" id="paciente_id" name="paciente_id" required>
+                                    <option value="">Selecione um paciente</option>
+                                    {% for paciente in pacientes %}
+                                    <option value="{{ paciente.id }}">{{ paciente.nome }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div>
+                                <label for="data_consulta" class="form-label">Data</label>
+                                <input type="date" class="form-control" id="data_consulta" name="data_consulta" required>
+                            </div>
+                            <div>
+                                <label for="hora_consulta" class="form-label">Hora</label>
+                                <input type="time" class="form-control" id="hora_consulta" name="hora_consulta" required>
+                            </div>
+                            <div>
+                                <label for="duracao_minutos" class="form-label">Duração (minutos)</label>
+                                <input type="number" class="form-control" id="duracao_minutos" name="duracao_minutos" value="50" min="10" required>
+                            </div>
+                            <div>
+                                <label for="status" class="form-label">Status</label>
+                                <select class="form-control" id="status" name="status" required>
+                                    <option value="Agendada" selected>Agendada</option>
+                                    <option value="Confirmada">Confirmada</option>
+                                    <option value="Realizada">Realizada</option>
+                                    <option value="Cancelada">Cancelada</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="notas" class="form-label">Notas (opcional)</label>
+                                <textarea class="form-control" id="notas" name="notas" rows="3"></textarea>
+                            </div>
+                        </div>
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-success agendar-submit-btn py-2">Agendar Consulta</button>
+                        </div>
+                    </form>
+            </div>
+        </div>
+    </div>
+
+<script>
+    // Adiciona data-labels para responsividade mobile
+    document.addEventListener('DOMContentLoaded', function() {
+        if(window.innerWidth <= 600){
+            document.querySelectorAll('.table tbody tr').forEach(function(row){
+                var labels = ["Paciente", "Data e Hora", "Duração", "Status", "Notas", ""];
+                row.querySelectorAll('td').forEach(function(td, idx){
+                    td.setAttribute('data-label', labels[idx]);
+                });
+            });
+        }
+    });
+</script>
+{% endblock %}

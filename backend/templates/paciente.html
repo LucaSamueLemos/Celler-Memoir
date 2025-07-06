@@ -1,0 +1,186 @@
+{% extends "base.html" %}
+
+{% block title %}Página do Paciente - {{ paciente.nome }} - Memoir App{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">Bem-vindo(a), {{ paciente.nome }}!</h1>
+
+
+<div style="margin-top: 50px; display: flex; justify-content: center; align-items: center; gap: 20px; background-color: #ffffff; border-radius: 16px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); padding: 20px; max-width: 500px; margin-left: auto; margin-right: auto; margin-bottom: 20px;">
+    <div>
+        {% if paciente.foto_perfil and paciente.foto_perfil != 'default.jpg' %}
+            <img src="{{ url_for('static', filename='uploads/' + paciente.foto_perfil) }}" alt="Foto de Perfil" style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 3px solid #00aaff;">
+        {% else %}
+            <img src="{{ url_for('static', filename='uploads/default.jpg') }}" alt="Foto Padrão" style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 3px solid #00aaff;">
+        {% endif %}
+    </div>
+    <div style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
+        <h2 style="margin: 0; font-size: 1.6rem; color: #333; text-align: center;">{{ paciente.nome.title() }}</h2>
+        <p style="margin: 6px 0 0; font-size: 1rem; color: #666; text-align: center;">Data de Nascimento: {{ paciente.data_nascimento.strftime('%d/%m/%Y') if paciente.data_nascimento else 'Não informada' }}</p>
+        <p style="margin: 6px 0 0; font-size: 1rem; color: #666; text-align: center;"><strong>Email:</strong> {% if paciente.user_login %}{{ paciente.user_login.email }}{% else %}N/A{% endif %}</p>
+        <p style="margin: 6px 0 0; font-size: 1rem; color: #666; text-align: center;"><strong>ID do Paciente:</strong> {{ paciente.id }}</p>
+        <p style="margin: 6px 0 0; font-size: 1rem; color: #666; text-align: center;"><strong>Psicólogo:</strong> {{ paciente.psicologo_responsavel.nome if paciente.psicologo_responsavel else 'N/A' }}</p>
+        <div id="upload-foto" class="mt-3" style="width: 100%; display: flex; justify-content: center; gap: 10px;">
+            {% if current_user.is_authenticated and current_user.tipo == 'paciente' %}
+            <form method="POST" action="{{ url_for('routes.upload_foto_propria_paciente') }}" enctype="multipart/form-data" id="photo-upload-form" style="display: flex; flex-direction: column; align-items: center; gap: 10px; width: 100%;">
+                <div class="input-group photo-upload-input-group" style="justify-content: center; gap: 10px; width: 100%;">
+                    <label for="photo-upload-input" class="btn btn-outline-secondary" style="cursor: pointer; padding: 0.375rem 0.75rem; font-size: 0.875rem;">Escolher Foto</label>
+                    <input type="file" class="form-control" name="foto" id="photo-upload-input" accept="image/*" required style="display: none;">
+                    <button type="submit" class="btn btn-outline-secondary" style="padding: 0.375rem 0.75rem; font-size: 0.875rem;">Enviar</button>
+                </div>
+                <div id="photo-preview-container" style="margin-top: 10px; display:none; width: 100%; text-align: center;">
+                    <label for="photo-upload-input" style="font-weight: 600;">Pré-visualização:</label><br>
+                    <img id="photo-preview" src="#" alt="Pré-visualização da Foto" class="img-thumbnail rounded-circle" style="width: 120px; height: 120px; object-fit: cover; border: 3px solid #00aaff; margin: 0 auto;">
+                </div>
+                <div id="photo-error-message" style="color: red; margin-top: 5px; display:none; text-align: center;"></div>
+            </form>
+            {% else %}
+            <p style="font-size: 1rem; color: #666; text-align: center;">Você não tem permissão para alterar a foto.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="row g-0">
+    <div class="col-md-6">
+        <div class="card h-100 rounded-0 rounded-start">
+            <div class="card-body">
+                <h2 class="card-title">Registrar Emoção do Dia</h2>
+                <form method="POST" action="{{ url_for('routes.registrar_emocao') }}">
+                    <div class="mb-3">
+                        <label for="emocao" class="form-label">Como você se sente hoje?</label>
+<div class="d-flex flex-row flex-nowrap gap-2 mb-2 overflow-auto Emoji">
+                            {% set emoji_map = {
+                                'feliz': '😊','triste': '😢','raiva': '😠','medo': '😨','surpresa': '😲','nojo': '🤢','neutro': '😐'
+                            } %}
+                            {% for emotion, emoji in emoji_map.items() %}
+                                <button type="button" class="btn btn-outline-primary btn-sm emotion-btn" data-emotion="{{ emotion }}" style="display: inline-block;">
+                                    {{ emoji }} {{ emotion|capitalize }}
+                                </button>
+                            {% endfor %}
+                        </div>
+                        </div>
+                    <!-- Removed the text input field for emotions as per user request -->
+                    <input type="hidden" id="emocao" name="emocao" value="">
+                    <button type="submit" class="btn btn-success mb-3">Registrar</button>
+                </form>
+                <script>
+                    const emotionInput = document.getElementById('emocao');
+                    const selectedEmotions = new Set();
+
+                    document.querySelectorAll('.emotion-btn').forEach(button => {
+                        button.addEventListener('click', () => {
+                            const emotion = button.getAttribute('data-emotion');
+                            if (selectedEmotions.has(emotion)) {
+                                selectedEmotions.delete(emotion);
+                                button.classList.remove('active');
+                            } else {
+                                selectedEmotions.add(emotion);
+                                button.classList.add('active');
+                            }
+                            emotionInput.value = Array.from(selectedEmotions).join(', ');
+                        });
+                    });
+                </script>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card h-100 rounded-0 rounded-end">
+            <div class="card-body">
+                <h2 class="card-title">Questionário Diário</h2>
+                <form method="POST" action="{{ url_for('routes.responder_questionario') }}">
+                    <div class="mb-4 p-4 border rounded shadow-sm">
+                        <div class="mb-3 row">
+                            <label for="humor_geral" class="col-sm-4 col-form-label fw-semibold">Humor geral (1 a 5)</label>
+                            <div class="col-sm-8">
+                                <input type="number" class="form-control" id="humor_geral" name="humor_geral" min="1" max="5" required>
+                            </div>
+                        </div>
+                        <div class="mb-3 row">
+                            <label for="nivel_ansiedade" class="col-sm-4 col-form-label fw-semibold">Nível de ansiedade (1 a 5)</label>
+                            <div class="col-sm-8">
+                                <input type="number" class="form-control" id="nivel_ansiedade" name="nivel_ansiedade" min="1" max="5" required>
+                            </div>
+                        </div>
+                        <div class="mb-3 row">
+                            <label for="sentimento_principal" class="col-sm-4 col-form-label fw-semibold">Sentimento principal</label>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control" id="sentimento_principal" name="sentimento_principal">
+                            </div>
+                        </div>
+                        <div class="mb-3 row">
+                            <label class="form-label fw-semibold w-100">Qualidade do sono</label>
+                            <select class="form-control" id="qualidade_sono" name="qualidade_sono" required>
+                                <option value="" selected disabled>Selecione</option>
+                                <option value="Ótima">Ótima</option>
+                                <option value="Boa">Boa</option>
+                                <option value="Regular">Regular</option>
+                                <option value="Ruim">Ruim</option>
+                            </select>
+                        </div>
+                        <div class="side-by-side-fields mb-3 row">
+                            <div class="col-12 col-md-6">
+                                <label class="form-label fw-semibold w-100">Você se alimentou bem hoje?</label>
+                                <div class="d-flex gap-2">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="alimentou_bem" id="alimentou_bem_sim" value="Sim" required>
+                                        <label class="form-check-label" for="alimentou_bem_sim">Sim</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="alimentou_bem" id="alimentou_bem_nao" value="Não" required>
+                                        <label class="form-check-label" for="alimentou_bem_nao">Não</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <label class="form-label fw-semibold w-100">Dormiu bem?</label>
+                                <div class="d-flex gap-2">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="dormiu_bem" id="dormiu_bem_sim" value="True">
+                                        <label class="form-check-label" for="dormiu_bem_sim">Sim</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="dormiu_bem" id="dormiu_bem_nao" value="False">
+                                        <label class="form-check-label" for="dormiu_bem_nao">Não</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="side-by-side-fields mb-3 row">
+                            <div class="col-12 col-md-6">
+                                <label class="form-label fw-semibold w-100">Teve motivação para tarefas?</label>
+                                <div class="d-flex gap-2">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="motivacao_tarefas" id="motivacao_tarefas_sim" value="True">
+                                        <label class="form-check-label" for="motivacao_tarefas_sim">Sim</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="motivacao_tarefas" id="motivacao_tarefas_nao" value="False">
+                                        <label class="form-check-label" for="motivacao_tarefas_nao">Não</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <label for="feliz_motivado" class="form-label fw-semibold w-100">Algo te deixou feliz ou motivado hoje?</label>
+                                <textarea class="form-control" id="feliz_motivado" name="feliz_motivado" rows="3"></textarea>
+                            </div>
+                        </div>
+                        <div class="mb-3 row">
+                            <label for="causa_estresse" class="col-sm-4 col-form-label fw-semibold">Algo te causou estresse hoje?</label>
+                            <div class="col-sm-8">
+                                <textarea class="form-control" id="causa_estresse" name="causa_estresse" rows="3"></textarea>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-12 text-end">
+                                <button type="submit" class="btn btn-info px-4">Enviar Respostas</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

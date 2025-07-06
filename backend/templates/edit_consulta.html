@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="card mx-auto my-4 p-3" style="max-width: 100%;">
+    <h2 class="card-title">Editar Consulta</h2>
+    <form method="POST" action="{{ url_for('routes.edit_consulta', consulta_id=consulta.id) }}">
+        <label for="paciente_id">Paciente:</label>
+        <select class="form-control" name="paciente_id" id="paciente_id" required>
+            {% for paciente in pacientes %}
+                <option value="{{ paciente.id }}" {% if paciente.id == consulta.paciente_id %}selected{% endif %}>{{ paciente.nome }}</option>
+            {% endfor %}
+        </select>
+        <br>
+
+        <label for="data_consulta">Data da Consulta:</label>
+        <input class="form-control" type="date" id="data_consulta" name="data_consulta" value="{{ consulta.data_hora.strftime('%Y-%m-%d') }}" required>
+        <br>
+
+        <label for="hora_consulta">Hora da Consulta:</label>
+        <input class="form-control" type="time" id="hora_consulta" name="hora_consulta" value="{{ consulta.data_hora.strftime('%H:%M') }}" required>
+        <br>
+
+        <label for="duracao_minutos">Duração (minutos):</label>
+        <input class="form-control" type="number" id="duracao_minutos" name="duracao_minutos" value="{{ consulta.duracao_minutos }}" min="1" required>
+        <br>
+
+        <label for="notas">Notas:</label>
+        <textarea class="form-control" id="notas" name="notas">{{ consulta.notas }}</textarea>
+        <br>
+
+        <label for="status">Status:</label>
+        <select class="form-control" id="status" name="status" required>
+            <option value="Agendada" {% if consulta.status == 'Agendada' %}selected{% endif %}>Agendada</option>
+            <option value="Confirmada" {% if consulta.status == 'Confirmada' %}selected{% endif %}>Confirmada</option>
+            <option value="Realizada" {% if consulta.status == 'Realizada' %}selected{% endif %}>Realizada</option>
+            <option value="Cancelada" {% if consulta.status == 'Cancelada' %}selected{% endif %}>Cancelada</option>
+        </select>
+        <br>
+
+        <button type="submit" class="btn btn-primary w-100 mb-2">Salvar</button>
+        <a href="{{ url_for('routes.psicologo_agenda') }}" class="btn btn-secondary w-100">Cancelar</a>
+    </form>
+</div>
+{% endblock %}

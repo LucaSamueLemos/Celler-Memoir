@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+
+{% block title %}Página do Paciente - {{ paciente.nome }} - Memoir App{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">Bem-vindo(a), {{ paciente.nome }}!</h1>
+
+<div class="card mb-4">
+    <div class="card-body text-center">
+        <h5 class="card-title">Sua Foto de Perfil</h5>
+        <div class="profile-photo mb-3">
+            {% if paciente.foto_perfil and paciente.foto_perfil != 'default.jpg' %}
+                <img src="{{ url_for('static', filename='uploads/' + paciente.foto_perfil) }}" alt="Foto de Perfil" class="img-thumbnail rounded-circle" style="width: 150px; height: 150px; object-fit: cover; border-radius: 50%;">
+            {% else %}
+                <img src="{{ url_for('static', filename='uploads/default.jpg') }}" alt="Foto Padrão" class="img-thumbnail rounded-circle" style="width: 150px; height: 150px; object-fit: cover; border-radius: 50%;">
+            {% endif %}
+        </div>
+        <form method="POST" action="{{ url_for('routes.upload_foto_propria_paciente') }}" enctype="multipart/form-data">
+            <div class="input-group mb-3">
+                <input type="file" class="form-control" name="foto" accept="image/*" required>
+                <button type="submit" class="btn btn-primary">Atualizar Foto</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="row g-0">
+    <div class="col-md-6">
+        <div class="card h-100 rounded-0 rounded-start">
+            <div class="card-body">
+                <h5 class="card-title">Registrar Emoção do Dia</h5>
+                <form method="POST" action="{{ url_for('routes.registrar_emocao') }}">
+                    <div class="mb-3">
+                        <label for="emocao" class="form-label">Como você se sente hoje?</label>
+                        <input type="text" class="form-control" id="emocao" name="emocao" placeholder="Ex: Feliz, Triste, Ansioso..." required>
+                    </div>
+                    <button type="submit" class="btn btn-success mb-3">Registrar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card h-100 rounded-0 rounded-end">
+            <div class="card-body">
+                <h5 class="card-title">Questionário Diário</h5>
+                <form method="POST" action="{{ url_for('routes.responder_questionario') }}">
+                    <div class="row mb-3">
+                        <div class="col-12 col-md-6">
+                            <label for="humor_geral" class="form-label">Humor geral (1 a 5)</label>
+                            <input type="number" class="form-control" id="humor_geral" name="humor_geral" min="1" max="5" required>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label for="sentimento_principal" class="form-label">Sentimento principal</label>
+                            <input type="text" class="form-control" id="sentimento_principal" name="sentimento_principal">
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-12 col-md-6">
+                            <label class="form-label">Dormiu bem?</label>
+                            <div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="dormiu_bem" id="dormiu_bem_sim" value="True">
+                                    <label class="form-check-label" for="dormiu_bem_sim">Sim</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="dormiu_bem" id="dormiu_bem_nao" value="False">
+                                    <label class="form-check-label" for="dormiu_bem_nao">Não</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label class="form-label">Teve motivação para tarefas?</label>
+                            <div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="motivacao_tarefas" id="motivacao_tarefas_sim" value="True">
+                                    <label class="form-check-label" for="motivacao_tarefas_sim">Sim</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="motivacao_tarefas" id="motivacao_tarefas_nao" value="False">
+                                    <label class="form-check-label" for="motivacao_tarefas_nao">Não</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="causa_estresse" class="form-label">Algo te causou estresse hoje?</label>
+                        <textarea class="form-control" id="causa_estresse" name="causa_estresse" rows="2"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-info">Enviar Respostas</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light mt-3">
+  <div class="container-fluid d-flex justify-content-center">
+    <ul class="navbar-nav d-flex flex-row justify-content-center gap-4">
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('routes.paciente') }}">Página Inicial</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('routes.paciente_registros') }}">Meus Registros</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('routes.paciente_minhas_consultas') }}">Minhas Consultas</a>
+      </li>
+      <li class="nav-item logout-item">
+        <a class="nav-link" href="{{ url_for('routes.logout') }}">Logout</a>
+      </li>
+    </ul>
+  </div>
+</nav>

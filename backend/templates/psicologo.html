@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}Meus Pacientes - Memoir App{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">Bem-vindo, {{ current_user.nome }}!</h1>
+<p>Esta é a sua área de psicólogo. Use o menu para navegar pelas funcionalidades disponíveis.</p>
+
+<h2 class="mt-4">Próximas Consultas</h2>
+{% if consultas_proximas and consultas_proximas|length > 0 %}
+    <ul class="list-group" style="list-style-type:none; padding-left:0; margin-left:0;">
+        {% for consulta in consultas_proximas %}
+            {% if consulta.status != 'Realizada' and consulta.status != 'realizada' %}
+            <li class="list-group-item">
+                <span class="status-circle
+                    {% if consulta.status == 'Confirmada' %}status-confirmada{% elif consulta.status == 'Agendada' %}status-agendada{% elif consulta.status == 'Cancelada' %}status-cancelada{% elif consulta.status == 'Realizada' or consulta.status == 'realizada' %}status-realizada{% else %}status-agendada{% endif %}"
+                    title="Status: {{ consulta.status }}"></span>
+                <strong>Paciente:</strong> {{ consulta.paciente_da_consulta.nome }}<br>
+                <strong>Data e Hora:</strong> {{ consulta.data_hora.strftime('%d/%m/%Y %H:%M') }}<br>
+                <em>Status: {{ consulta.status }}</em><br>
+                {% if consulta.notas %}
+                <strong>Notas:</strong> {{ consulta.notas }}
+                {% endif %}
+            </li>
+            {% endif %}
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>Nenhuma consulta agendada para os próximos dias.</p>
+{% endif %}
+
+{% endblock %}

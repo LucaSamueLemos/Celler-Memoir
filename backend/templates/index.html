@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}Login - Memoir App{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-center align-items-center min-vh-100" > {# min-vh-100 para centralizar verticalmente, ajuste margin-top se precisar #}
+    <div class="card login-card p-4 p-md-5 mx-auto" style="max-width: 500px; width: 100%;">
+        <div class="card-body text-center">
+            <h2 class="card-title mb-4">Bem-vindo ao Celler Memoir </h2>
+            <img src="{{ url_for('static', filename='img/Logo Trabalho.png') }}" alt="Memoir Logo" class="img-fluid mb-3" style="max-width: 150px;">
+            <p class="mb-4 text-muted">Sua jornada para o bem-estar mental começa aqui.</p>
+
+            <form method="POST">
+                <div class="mb-3 text-start">
+                    <label for="email" class="form-label">Email</label>
+                    <input type="email" class="form-control" id="email" name="email" placeholder="Seu email" required>
+                </div>
+            
+                <div class="mb-4 text-start">
+                    <label for="password" class="form-label">Senha</label>
+                    <input type="password" class="form-control" id="password" name="password" placeholder="Sua senha" required>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100 mb-3">Entrar</button>
+              
+            </form>
+            <p class="text-center">Não tem conta? <a href="{{ url_for('routes.register_psicologo') }}">Cadastre-se como Psicólogo</a></p>
+        </div>
+    </div>
+</div>
+{% endblock %}

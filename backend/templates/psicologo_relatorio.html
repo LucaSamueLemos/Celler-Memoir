@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+
+{% block title %}Relatório do Paciente - Psicólogo{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12 mb-4">
+        <h1 class="text-center">Relatório do Paciente: {{ paciente.nome }}</h1>
+        <p class="text-center text-muted">Visualize os dados e gráficos do paciente.</p>
+    </div>
+
+    <div class="col-lg-12 mb-4">
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <h3 class="card-title mb-3">Resumo de Emoções</h3>
+                <canvas id="emocaoChart"></canvas>
+            </div>
+        </div>
+
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <h3 class="card-title mb-3">Resumo de Questionários</h3>
+                <canvas id="questionarioChart"></canvas>
+            </div>
+        </div>
+
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h3 class="card-title mb-3">Consultas</h3>
+                {% if consultas %}
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Data e Hora</th>
+                            <th>Duração</th>
+                            <th>Status</th>
+                            <th>Notas</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for consulta in consultas %}
+                        <tr>
+                            <td>{{ consulta.data_hora.strftime('%d/%m/%Y %H:%M') }}</td>
+                            <td>{{ consulta.duracao_minutos }} min</td>
+                            <td>{{ consulta.status }}</td>
+                            <td>{{ consulta.notas if consulta.notas else 'N/A' }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <p>Este paciente ainda não tem consultas agendadas.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const emocaoCtx = document.getElementById('emocaoChart').getContext('2d');
+    const questionarioCtx = document.getElementById('questionarioChart').getContext('2d');
+
+    const emocaoChart = new Chart(emocaoCtx, {
+        type: 'bar',
+        data: {
+            labels: {{ emocao_labels|tojson }},
+            datasets: [{
+                label: 'Frequência de Emoções',
+                data: {{ emocao_data|tojson }},
+                backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: { beginAtZero: true }
+            }
+        }
+    });
+
+    const questionarioChart = new Chart(questionarioCtx, {
+        type: 'line',
+        data: {
+            labels: {{ questionario_labels|tojson }},
+            datasets: [{
+                label: 'Humor Geral ao Longo do Tempo',
+                data: {{ questionario_data|tojson }},
+                fill: false,
+                borderColor: 'rgba(255, 99, 132, 1)',
+                tension: 0.1
+            }]
+        },
+        options: {
+            scales: {
+                y: { beginAtZero: true, min: 0, max: 5 }
+            }
+        }
+    });
+</script>
+{% endblock %}

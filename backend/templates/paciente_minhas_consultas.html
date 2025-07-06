@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block title %}Minhas Consultas - Paciente{% endblock %}
+
+{% block content %}
+<div class="container paciente-minhas-consultas-wrapper">
+    <div class="row justify-content-center">
+        <div class="col-md-10 col-lg-8 paciente-minhas-consultas-top-card">
+            <h1 class="text-center mb-4">Minhas Consultas Agendadas</h1>
+            <p class="text-center text-muted">Aqui você pode ver todas as suas consultas com seu psicólogo.</p>
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h3 class="card-title mb-3">Próximos Atendimentos </h3>
+                    {% if consultas %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Psicólogo</th>
+                                    <th>Data e Hora</th>
+                                    <th>Duração</th>
+                                    <th>Status</th>
+                                    <th>Notas (do psicólogo)</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for consulta in consultas %}
+                                <tr {% if consulta.data_hora < now %}class="table-secondary"{% endif %}>
+                                    <td>{{ consulta.psicologo_da_consulta.email }}</td>
+                                    <td>{{ consulta.data_hora.strftime('%d/%m/%Y %H:%M') }}</td>
+                                    <td>{{ consulta.duracao_minutos }} min</td>
+                                    <td><span class="badge bg-{% if consulta.status == 'Agendada' %}info{% elif consulta.status == 'Realizada' %}success{% elif consulta.status == 'Confirmada' %}primary{% elif consulta.status == 'Rejeitada' %}danger{% else %}secondary{% endif %}">{{ consulta.status }}</span></td>
+                                    <td>{{ consulta.notas if consulta.notas else 'N/A' }}</td>
+                                    <td>
+                                        {% if consulta.status == 'Agendada' %}
+                                        <div class="d-flex gap-2 align-items-center justify-content-center consulta-action-buttons flex-wrap flex-md-nowrap w-100">
+                                            <form method="POST" action="{{ url_for('routes.paciente_confirmar_consulta', consulta_id=consulta.id) }}" class="mb-1 w-100 w-md-auto">
+                                                <button type="submit" class="btn btn-primary btn-xs consulta-btn w-100 w-md-auto" style="padding: 4px 0.25rem; font-size: 0.75rem; width:90px;">Confirmar</button>
+                                            </form>
+                                            <form method="POST" action="{{ url_for('routes.paciente_rejeitar_consulta', consulta_id=consulta.id) }}" class="mb-1 w-100 w-md-auto">
+                                                <button type="submit" class="btn btn-danger btn-xs consulta-btn w-100 w-md-auto" style="padding: 4px 0.25rem; font-size: 0.75rem;width:90px;">Rejeitar</button>
+                                            </form>
+                                        </div>
+                                        {% else %}
+                                        <span class="text-muted">-</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-info" role="alert">
+                        Você ainda não tem consultas agendadas.
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

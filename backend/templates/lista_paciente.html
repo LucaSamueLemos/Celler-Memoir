@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Lista de Pacientes{% endblock %}
+{% block content %}
+<h1>Lista de Pacientes</h1>
+{% if pacientes %}
+<div class="patient-list d-flex flex-wrap gap-3 justify-content-start">
+    {% for paciente in pacientes %}
+    <div class="card mb-3 mx-auto" style="max-width: 600px; margin: 10px 20px;">
+        <div class="card-body" style="padding: 2rem 3rem;">
+            <h5 class="card-title">{{ paciente.nome }}</h5>
+            <p class="card-text"><strong>Email:</strong> {{ paciente.user_login.email if paciente.user_login else 'N/A' }}</p>
+            <p class="card-text"><strong>CPF:</strong> {{ paciente.user_login.cpf if paciente.user_login else 'N/A' }}</p>
+            <p class="card-text"><strong>Data de Nascimento:</strong> {{ paciente.data_nascimento.strftime('%d/%m/%Y') if paciente.data_nascimento else 'N/A' }}</p>
+            <a href="{{ url_for('routes.ver_registros_paciente', paciente_user_id=paciente.id) }}" class="btn btn-primary btn-sm" style="width: 150px;">Ver Registros</a>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<p>Nenhum paciente encontrado.</p>
+{% endif %}
+{% endblock %}
