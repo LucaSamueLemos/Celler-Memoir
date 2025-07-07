@@ -1,44 +1,50 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="card mx-auto my-4 p-3" style="max-width: 100%;">
-    <h2 class="card-title">Editar Consulta</h2>
-    <form method="POST" action="{{ url_for('routes.edit_consulta', consulta_id=consulta.id) }}">
-        <label for="paciente_id">Paciente:</label>
-        <select class="form-control" name="paciente_id" id="paciente_id" required>
-            {% for paciente in pacientes %}
-                <option value="{{ paciente.id }}" {% if paciente.id == consulta.paciente_id %}selected{% endif %}>{{ paciente.nome }}</option>
-            {% endfor %}
-        </select>
-        <br>
-
-        <label for="data_consulta">Data da Consulta:</label>
-        <input class="form-control" type="date" id="data_consulta" name="data_consulta" value="{{ consulta.data_hora.strftime('%Y-%m-%d') }}" required>
-        <br>
-
-        <label for="hora_consulta">Hora da Consulta:</label>
-        <input class="form-control" type="time" id="hora_consulta" name="hora_consulta" value="{{ consulta.data_hora.strftime('%H:%M') }}" required>
-        <br>
-
-        <label for="duracao_minutos">Duração (minutos):</label>
-        <input class="form-control" type="number" id="duracao_minutos" name="duracao_minutos" value="{{ consulta.duracao_minutos }}" min="1" required>
-        <br>
-
-        <label for="notas">Notas:</label>
-        <textarea class="form-control" id="notas" name="notas">{{ consulta.notas }}</textarea>
-        <br>
-
-        <label for="status">Status:</label>
-        <select class="form-control" id="status" name="status" required>
-            <option value="Agendada" {% if consulta.status == 'Agendada' %}selected{% endif %}>Agendada</option>
-            <option value="Confirmada" {% if consulta.status == 'Confirmada' %}selected{% endif %}>Confirmada</option>
-            <option value="Realizada" {% if consulta.status == 'Realizada' %}selected{% endif %}>Realizada</option>
-            <option value="Cancelada" {% if consulta.status == 'Cancelada' %}selected{% endif %}>Cancelada</option>
-        </select>
-        <br>
-
-        <button type="submit" class="btn btn-primary w-100 mb-2">Salvar</button>
-        <a href="{{ url_for('routes.psicologo_agenda') }}" class="btn btn-secondary w-100">Cancelar</a>
-    </form>
+<div class="centered-card-container">
+    <div class="card p-3" style="max-width: 700px; width: 100%;">
+        <h2 class="card-title text-center mb-4">Editar Consulta</h2>
+<form method="POST" action="{{ url_for('routes.edit_consulta', consulta_id=consulta.id) }}" class="text-center">
+    <div class="row g-3">
+        <div class="col-md-6">
+            <label for="paciente_id" class="form-label">Paciente:</label>
+            <select class="form-control mx-auto d-block" name="paciente_id" id="paciente_id" required>
+                {% for paciente in pacientes %}
+                    <option value="{{ paciente.id }}" {% if paciente.id == consulta.paciente_id %}selected{% endif %}>{{ paciente.nome }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-6">
+            <label for="data_consulta" class="form-label">Data da Consulta:</label>
+            <input class="form-control mx-auto d-block" type="date" id="data_consulta" name="data_consulta" value="{{ consulta.data_hora.strftime('%Y-%m-%d') }}" required>
+        </div>
+        <div class="col-md-6">
+            <label for="hora_consulta" class="form-label">Hora da Consulta:</label>
+            <input class="form-control mx-auto d-block" type="time" id="hora_consulta" name="hora_consulta" value="{{ consulta.data_hora.strftime('%H:%M') }}" required>
+        </div>
+        <div class="col-md-6">
+            <label for="duracao_minutos" class="form-label">Duração (minutos):</label>
+            <input class="form-control mx-auto d-block" type="number" id="duracao_minutos" name="duracao_minutos" value="{{ consulta.duracao_minutos }}" min="1" required>
+        </div>
+        <div class="col-12">
+            <label for="notas" class="form-label">Notas:</label>
+            <textarea class="form-control mx-auto d-block" id="notas" name="notas">{{ consulta.notas }}</textarea>
+        </div>
+        <div class="col-12">
+            <label for="status" class="form-label">Status:</label>
+            <select class="form-control mx-auto d-block" id="status" name="status" required>
+                <option value="Agendada" {% if consulta.status == 'Agendada' %}selected{% endif %}>Agendada</option>
+                <option value="Confirmada" {% if consulta.status == 'Confirmada' %}selected{% endif %}>Confirmada</option>
+                <option value="Realizada" {% if consulta.status == 'Realizada' %}selected{% endif %}>Realizada</option>
+                <option value="Cancelada" {% if consulta.status == 'Cancelada' %}selected{% endif %}>Cancelada</option>
+            </select>
+        </div>
+        <div class="col-12 d-flex gap-2 flex-column flex-sm-row">
+            <button type="submit" class="btn btn-primary flex-fill">Salvar</button>
+            <a href="{{ url_for('routes.psicologo_agenda') }}" class="btn btn-secondary flex-fill">Cancelar</a>
+        </div>
+    </div>
+</form>
+    </div>
 </div>
 {% endblock %}
