@@ -5,7 +5,39 @@
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    padding: 15px;
+    padding: 30px;
+}
+
+/* Centralize all elements inside the card */
+.centered-card-container .card form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.centered-card-container .card form .form-control {
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 600px;
+    width: 500px;
+}
+
+.centered-card-container .card form .btn,
+.centered-card-container .card form a.btn {
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+    width: auto;
+}
+
+/* Reduce size of Cancel button specifically */
+.centered-card-container .card form a.btn.btn-secondary {
+    width: 120px;
+    padding: 0.6rem 1rem;
+    font-size: 0.9rem;
+    text-align: center;
+    text-decoration: none;
+    margin-bottom: 10px; /* Add some space below the Cancel button */
 }
 
 /* Circulo de notificação de status da consulta */
@@ -39,6 +71,16 @@
     max-width: 500px;
     min-width: 320px;
     box-sizing: border-box;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+/* Override card style for adicionar_paciente page to match edit_consulta */
+.centered-card-container > .card.shadow-sm.w-100 {
+    max-width: 700px;
+    width: 100%;
+    padding: 1rem;
+    box-shadow: none;
 }
 
 /* Definição de variáveis CSS para facilitar a mudança de cores */
@@ -80,6 +122,37 @@ h1, h2, h3, h4, h5, h6, .navbar-brand, .card-title {
     background-color: var(--primary-color) !important;
     box-shadow: 0 3px 6px rgba(0,0,0,0.15); /* Sombra mais visível */
     border-bottom: 3px solid var(--accent-color); /* Linha sutil no topo */
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    left: 0;
+    position: relative;
+}
+
+.navbar .container {
+    max-width: 1140px;
+    margin: 0 auto;
+    padding: 0 15px;
+}
+
+footer {
+    background-color: var(--primary-color) !important;
+    color: #e0e0e0;
+    font-size: 0.9rem;
+    box-shadow: 0 -3px 6px rgba(0,0,0,0.15); /* Sombra para profundidade */
+    border-top: 3px solid var(--accent-color); /* Linha sutil no topo */
+    text-align: center;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    left: 0;
+    position: relative;
+}
+
+footer .container {
+    max-width: 1140px;
+    margin: 0 auto;
+    padding: 0 15px;
 }
 
 /* Aumentar espaçamento entre os itens do menu de navegação */
