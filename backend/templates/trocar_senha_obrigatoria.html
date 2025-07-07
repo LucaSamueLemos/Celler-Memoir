@@ -1,19 +1,15 @@
-<div class="mb-3">
-        <label for="nova_senha" class="form-label">Nova Senha</label>
-        <input type="password" class="form-control" id="nova_senha" name="nova_senha" required>
-    </div>
-    <div class="mb-3">
-        <label for="confirmar_senha" class="form-label">Confirmar Nova Senha</label>
-        <input type="password" class="form-control" id="confirmar_senha" name="confirmar_senha" required>
-    </div>
-    <button type="submit" class="btn btn-primary">Alterar Senha</button>
-</form>
-=======
+{% extends "base.html" %}
+
+{% block title %}Trocar Senha Obrigatória{% endblock %}
+
+{% block content %}
+<div class="alert alert-info" role="alert">
+    Senha deve conter pelo menos 8 caracteres, incluindo letras maiúsculas, minúsculas e números.
+</div>
 <form method="POST" action="{{ url_for('routes.trocar_senha_obrigatoria') }}">
     <div class="mb-3">
         <label for="nova_senha" class="form-label">Nova Senha</label>
         <input type="password" class="form-control" id="nova_senha" name="nova_senha" required>
-        <div class="form-text">Senha deve conter pelo menos 8 caracteres, incluindo letras maiúsculas, minúsculas e números.</div>
     </div>
     <div class="mb-3">
         <label for="confirmar_senha" class="form-label">Confirmar Nova Senha</label>
@@ -21,3 +17,4 @@
     </div>
     <button type="submit" class="btn btn-primary">Alterar Senha</button>
 </form>
+{% endblock %}
