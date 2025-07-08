@@ -27,7 +27,7 @@
                             <tbody>
                                 {% for consulta in consultas %}
                                 <tr {% if consulta.data_hora < now %}class="table-secondary"{% endif %}>
-                                    <td>{{ consulta.psicologo_da_consulta.email }}</td>
+                                    <td>{{ consulta.psicologo_da_consulta.nome }}</td>
                                     <td>{{ consulta.data_hora.strftime('%d/%m/%Y %H:%M') }}</td>
                                     <td>{{ consulta.duracao_minutos }} min</td>
                                     <td><span class="badge bg-{% if consulta.status == 'Agendada' %}info{% elif consulta.status == 'Realizada' %}success{% elif consulta.status == 'Confirmada' %}primary{% elif consulta.status == 'Rejeitada' %}danger{% else %}secondary{% endif %}">{{ consulta.status }}</span></td>
