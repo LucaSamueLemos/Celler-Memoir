@@ -565,88 +565,104 @@ def adicionar_paciente():
 @routes.route('/paciente/upload_foto_propria', methods=['POST'])
 @login_required
 def upload_foto_propria_paciente():
-    if current_user.tipo != 'paciente':
-        flash('Acesso não autorizado.', category='error')
-        return redirect(url_for('routes.login'))
+    import logging
+    logger = logging.getLogger('photo_upload')
+    try:
+        if current_user.tipo != 'paciente':
+            flash('Acesso não autorizado.', category='error')
+            return redirect(url_for('routes.login'))
 
-    paciente = current_user.paciente_perfil
-    if not paciente:
-        flash('Seu perfil de paciente não foi encontrado.', category='error')
-        return redirect(url_for('routes.paciente'))
+        paciente = current_user.paciente_perfil
+        if not paciente:
+            flash('Seu perfil de paciente não foi encontrado.', category='error')
+            return redirect(url_for('routes.paciente'))
 
-    if 'foto' not in request.files:
-        flash('Nenhum arquivo de foto enviado.', category='error')
-        return redirect(url_for('routes.paciente'))
+        if 'foto' not in request.files:
+            flash('Nenhum arquivo de foto enviado.', category='error')
+            return redirect(url_for('routes.paciente'))
 
-    file = request.files['foto']
+        file = request.files['foto']
 
-    if file.filename == '':
-        flash('Nenhum arquivo selecionado.', category='error')
-        return redirect(url_for('routes.paciente'))
+        if file.filename == '':
+            flash('Nenhum arquivo selecionado.', category='error')
+            return redirect(url_for('routes.paciente'))
 
-    if file and allowed_file(file.filename):
-        # Remove a foto antiga se não for a padrão
-        if paciente.foto_perfil and paciente.foto_perfil != 'default.jpg':
-            old_filepath = os.path.join(current_app.config['UPLOAD_FOLDER'], paciente.foto_perfil)
-            if os.path.exists(old_filepath):
-                os.remove(old_filepath)
+        if file and allowed_file(file.filename):
+            # Remove a foto antiga se não for a padrão
+            if paciente.foto_perfil and paciente.foto_perfil != 'default.jpg':
+                old_filepath = os.path.join(current_app.config['UPLOAD_FOLDER'], paciente.foto_perfil)
+                if os.path.exists(old_filepath):
+                    os.remove(old_filepath)
 
-        filename = secure_filename(file.filename)
-        timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
-        filename = f"{current_user.id}_paciente_{timestamp}_{filename}" # Nome mais descritivo
+            filename = secure_filename(file.filename)
+            timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
+            filename = f"{current_user.id}_paciente_{timestamp}_{filename}" # Nome mais descritivo
 
-        filepath = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
-        file.save(filepath)
+            filepath = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
+            file.save(filepath)
 
-        paciente.foto_perfil = filename
-        db.session.commit()
-        flash('Foto de perfil atualizada com sucesso!', category='success')
-    else:
-        flash('Tipo de arquivo não permitido.', category='error')
+            paciente.foto_perfil = filename
+            db.session.commit()
+            flash('Foto de perfil atualizada com sucesso!', category='success')
+            logger.info(f"Foto salva com sucesso: {filename}")
+        else:
+            flash('Tipo de arquivo não permitido.', category='error')
+            logger.error("Tipo de arquivo não permitido.")
+    except Exception as e:
+        logger.error(f"Erro ao salvar foto: {e}")
+        flash(f"Erro ao salvar foto: {e}", category='error')
 
     return redirect(url_for('routes.paciente'))
 
 @routes.route('/paciente/<int:paciente_id>/upload_foto_psicologo', methods=['POST'])
 @login_required
 def upload_foto_paciente_psicologo(paciente_id):
-    if current_user.tipo != 'psicologo':
-        flash('Acesso não autorizado.', category='error')
-        return redirect(url_for('routes.login'))
+    import logging
+    logger = logging.getLogger('photo_upload')
+    try:
+        if current_user.tipo != 'psicologo':
+            flash('Acesso não autorizado.', category='error')
+            return redirect(url_for('routes.login'))
 
-    paciente = Paciente.query.filter_by(id=paciente_id, psicologo_id=current_user.id).first()
-    if not paciente:
-        flash('Paciente não encontrado ou não associado a você.', category='error')
-        return redirect(url_for('routes.psicologo'))
+        paciente = Paciente.query.filter_by(id=paciente_id, psicologo_id=current_user.id).first()
+        if not paciente:
+            flash('Paciente não encontrado ou não associado a você.', category='error')
+            return redirect(url_for('routes.psicologo'))
 
-    if 'foto' not in request.files:
-        flash('Nenhum arquivo de foto enviado.', category='error')
-        return redirect(url_for('routes.ver_registros_paciente', paciente_user_id=paciente.id))
+        if 'foto' not in request.files:
+            flash('Nenhum arquivo de foto enviado.', category='error')
+            return redirect(url_for('routes.ver_registros_paciente', paciente_user_id=paciente.id))
 
-    file = request.files['foto']
+        file = request.files['foto']
 
-    if file.filename == '':
-        flash('Nenhum arquivo selecionado.', category='error')
-        return redirect(url_for('routes.ver_registros_paciente', paciente_user_id=paciente.id))
+        if file.filename == '':
+            flash('Nenhum arquivo selecionado.', category='error')
+            return redirect(url_for('routes.ver_registros_paciente', paciente_user_id=paciente.id))
 
-    if file and allowed_file(file.filename):
-        # Remove a foto antiga se não for a padrão
-        if paciente.foto_perfil and paciente.foto_perfil != 'default.jpg':
-            old_filepath = os.path.join(current_app.config['UPLOAD_FOLDER'], paciente.foto_perfil)
-            if os.path.exists(old_filepath):
-                os.remove(old_filepath)
+        if file and allowed_file(file.filename):
+            # Remove a foto antiga se não for a padrão
+            if paciente.foto_perfil and paciente.foto_perfil != 'default.jpg':
+                old_filepath = os.path.join(current_app.config['UPLOAD_FOLDER'], paciente.foto_perfil)
+                if os.path.exists(old_filepath):
+                    os.remove(old_filepath)
 
-        filename = secure_filename(file.filename)
-        timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
-        filename = f"{paciente.id}_psicologo_{current_user.id}_{timestamp}_{filename}" 
+            filename = secure_filename(file.filename)
+            timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
+            filename = f"{paciente.id}_psicologo_{current_user.id}_{timestamp}_{filename}" 
 
-        filepath = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
-        file.save(filepath)
+            filepath = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
+            file.save(filepath)
 
-        paciente.foto_perfil = filename
-        db.session.commit()
-        flash('Foto de perfil do paciente atualizada com sucesso!', category='success')
-    else:
-        flash('Tipo de arquivo não permitido.', category='error')
+            paciente.foto_perfil = filename
+            db.session.commit()
+            flash('Foto de perfil do paciente atualizada com sucesso!', category='success')
+            logger.info(f"Foto do paciente salva com sucesso: {filename}")
+        else:
+            flash('Tipo de arquivo não permitido.', category='error')
+            logger.error("Tipo de arquivo não permitido.")
+    except Exception as e:
+        logger.error(f"Erro ao salvar foto do paciente: {e}")
+        flash(f"Erro ao salvar foto do paciente: {e}", category='error')
 
     return redirect(url_for('routes.ver_registros_paciente', paciente_user_id=paciente.id))
 
