@@ -15,9 +15,7 @@ def create_app():
     app.config['SECRET_KEY'] = 'sua_chave_secreta_aqui' # Mude para uma chave segura em produção
 
     # Usa a variável de ambiente para a URL do banco PostgreSQL do Render
-    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('SQLALCHEMY_DATABASE_URI', 'sqlite:///site.db')
-
-    app.config['UPLOAD_FOLDER'] = path.join(app.root_path, 'static', 'uploads')
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://sitedb_n2nj_user:d6DySncwYdOOjefL3eD86QOiOuwV5Qg0@dpg-d1m8j62li9vc7397a260-a/sitedb_n2nj'    app.config['UPLOAD_FOLDER'] = path.join(app.root_path, 'static', 'uploads')
     app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024 # Limite de 16MB para uploads
 
     # Configurações para Flask-Mail (exemplo com Gmail SMTP)
