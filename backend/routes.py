@@ -263,11 +263,7 @@ def delete_paciente(paciente_id):
 
 @routes.route('/', methods=['GET', 'POST'])
 def login():
-    if current_user.is_authenticated:
-        if current_user.tipo == 'paciente':
-            return redirect(url_for('routes.paciente'))
-        elif current_user.tipo == 'psicologo':
-            return redirect(url_for('routes.psicologo'))
+    # Removido redirecionamento para usuários autenticados para sempre mostrar a página de login
 
     if request.method == 'POST':
         email = request.form.get('email')
