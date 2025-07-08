@@ -22,8 +22,8 @@
             </a>
             <div id="navbarNav" class="navbar-collapse">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    {% if current_user.is_authenticated %}
-{% if current_user.tipo == 'paciente' %}
+                    {% if current_user.is_authenticated and request.endpoint != 'routes.login' %}
+                        {% if current_user.tipo == 'paciente' %}
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ url_for('routes.paciente') }}">Minha Página</a>
                             </li>
@@ -45,7 +45,7 @@
                             <li class="nav-item logout-item logout-link">
                                 <a class="nav-link" href="{{ url_for('routes.logout') }}">Logout</a>
                             </li>
-                    {% elif current_user.tipo == 'psicologo' %}
+                        {% elif current_user.tipo == 'psicologo' %}
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ url_for('routes.psicologo') }}">Home</a>
                             </li>
@@ -64,7 +64,9 @@
                             <li class="nav-item logout-item logout-link">
                                 <a class="nav-link" href="{{ url_for('routes.logout') }}">Logout</a>
                             </li>
-                    {% endif %}
+                        {% endif %}
+                    {% else %}
+                        <!-- Usuário não autenticado: não mostrar links específicos -->
                     {% endif %}
                 </ul>
             </div>
