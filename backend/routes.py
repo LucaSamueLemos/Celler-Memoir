@@ -23,6 +23,15 @@ def normalize_cpf(cpf):
 
 routes = Blueprint('routes', __name__)
 
+@routes.route('/test_db_connection')
+def test_db_connection():
+    try:
+        # Simple query to test database connection
+        user_count = User.query.count()
+        return f"Database connection successful! User count: {user_count}"
+    except Exception as e:
+        return f"Database connection failed: {str(e)}"
+
 @routes.app_context_processor
 def inject_perguntas_pendentes():
     from sqlalchemy import func
