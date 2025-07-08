@@ -22,6 +22,10 @@ def create_app():
     app.config['UPLOAD_FOLDER'] = path.join(app.root_path, 'static', 'uploads')
     app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024 # Limite de 16MB para uploads
 
+    # Garantir que o diretório de upload exista
+    if not os.path.exists(app.config['UPLOAD_FOLDER']):
+        os.makedirs(app.config['UPLOAD_FOLDER'])
+
     # Configurações para Flask-Mail (exemplo com Gmail SMTP)
     app.config['MAIL_SERVER'] = 'smtp.gmail.com'
     app.config['MAIL_PORT'] = 587
