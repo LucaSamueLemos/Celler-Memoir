@@ -4,21 +4,23 @@ from os import path
 from flask_login import LoginManager
 from flask_migrate import Migrate
 from flask_mail import Mail
+import os
 
 db = SQLAlchemy()
-DB_NAME = "site.db"
 migrate = Migrate()
 mail = Mail()
 
 def create_app():
     app = Flask(__name__)
     app.config['SECRET_KEY'] = 'sua_chave_secreta_aqui' # Mude para uma chave segura em produção
-    app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{DB_NAME}'
+
+    # Usa a variável de ambiente para a URL do banco PostgreSQL do Render
+    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('SQLALCHEMY_DATABASE_URI', 'sqlite:///site.db')
+
     app.config['UPLOAD_FOLDER'] = path.join(app.root_path, 'static', 'uploads')
     app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024 # Limite de 16MB para uploads
 
     # Configurações para Flask-Mail (exemplo com Gmail SMTP)
-    import os
     app.config['MAIL_SERVER'] = 'smtp.gmail.com'
     app.config['MAIL_PORT'] = 587
     app.config['MAIL_USE_TLS'] = True
@@ -40,13 +42,7 @@ def create_app():
     from backend.routes import routes
     app.register_blueprint(routes, url_prefix='/')
 
-    # Cria o banco de dados se não existir
-    with app.app_context():
-        if not path.exists(path.join(app.instance_path, DB_NAME)):
-            db.create_all()
-            print('Banco de dados criado!')
-        else:
-            print('Banco de dados já existe.')
+    # Não cria mais o banco SQLite local, pois usaremos PostgreSQL
 
     # Configura o Flask-Login
     login_manager = LoginManager()
