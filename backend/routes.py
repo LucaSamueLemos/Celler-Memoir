@@ -259,7 +259,9 @@ def delete_paciente(paciente_id):
         db.session.rollback()
         flash(f'Erro ao excluir paciente: {e}', category='error')
 
-    return redirect(url_for('routes.psicologo'))
+    # Redirect back to referring page or to add patient page
+    next_url = request.referrer or url_for('routes.adicionar_paciente')
+    return redirect(next_url)
 
 @routes.route('/', methods=['GET', 'POST'])
 def login():
